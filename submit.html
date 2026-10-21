@@ -19,38 +19,42 @@
     </nav>
   </header>
 
-  <main>
-    <h2>Start a new study session</h2>
-    <p>Paste your notes or enter a topic, and choose a subject area below.</p>
+<main>
+  <h2>Start a new study session</h2>
+  <p>Paste your notes or enter a topic, and choose a subject area below.</p>
 
-    <!--
-      Session submission form.
-      Static for M1 — no JS validation or submit handling yet.
-      action="#" is a placeholder until the backend (M3) exists.
-    -->
-    <form class="card" action="#" method="post">
-      <label for="topic">Notes or topic</label>
-      <textarea id="topic" name="topic" placeholder="Paste your notes here, or type a topic like 'Newton's Laws of Motion'"></textarea>
+  <!-- novalidate: we show our own error messages via submit.js -->
+  <form id="session-form" class="card" novalidate>
+    <label for="topic">Notes or topic</label>
+    <textarea id="topic" name="topic" placeholder="Paste your notes here, or type a topic like 'Newton's Laws of Motion'"></textarea>
+    <p id="topic-counter" class="counter">0 / 5000</p>
+    <p id="topic-error" class="field-error" role="alert"></p>
 
-      <label for="subject">Subject</label>
-      <select id="subject" name="subject">
-        <option value="">Select a subject</option>
-        <option value="math">Math</option>
-        <option value="cs">Computer Science</option>
-        <option value="science">Science</option>
-        <option value="history">History</option>
-        <option value="other">Other</option>
-      </select>
+    <label for="subject">Subject</label>
+    <select id="subject" name="subject">
+      <option value="">Select a subject</option>
+      <option value="math">Math</option>
+      <option value="cs">Computer Science</option>
+      <option value="science">Science</option>
+      <option value="history">History</option>
+      <option value="other">Other</option>
+    </select>
+    <p id="subject-error" class="field-error" role="alert"></p>
 
-      <label for="count">Number of questions</label>
-      <input type="number" id="count" name="count" min="1" max="10" value="5">
+    <label for="count">Number of questions</label>
+    <input type="number" id="count" name="count" min="1" max="10" value="5">
+    <p id="count-error" class="field-error" role="alert"></p>
 
-      <button type="submit" class="btn" style="margin-top: 1.5rem;">Generate Practice Questions</button>
-    </form>
-  </main>
+    <button type="submit" id="generate-btn" class="btn" style="margin-top: 1.5rem;">Generate Practice Questions</button>
+    <p id="form-status" class="form-status" role="status"></p>
+  </form>
+</main>
 
   <footer>
     <p>StudySprint — COMP 322 Honors Contract Project</p>
   </footer>
+
+  <script src="storage.js"></script>
+  <script src="submit.js"></script>
 </body>
 </html>

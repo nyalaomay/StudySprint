@@ -19,43 +19,32 @@
     </nav>
   </header>
 
-  <main>
-    <h2>Past Sessions</h2>
-    <!-- Hardcoded sample rows for M1. Will be populated from the database in M4. -->
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Topic</th>
-          <th>Subject</th>
-          <th>Questions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Sep 22, 2026</td>
-          <td>Newton's Laws of Motion</td>
-          <td>Science</td>
-          <td><a href="results.html">View</a></td>
-        </tr>
-        <tr>
-          <td>Sep 18, 2026</td>
-          <td>Big-O Notation</td>
-          <td>Computer Science</td>
-          <td><a href="results.html">View</a></td>
-        </tr>
-        <tr>
-          <td>Sep 10, 2026</td>
-          <td>The Cold War</td>
-          <td>History</td>
-          <td><a href="results.html">View</a></td>
-        </tr>
-      </tbody>
-    </table>
-  </main>
+<main>
+  <h2>Past Sessions</h2>
+  <p id="history-empty" hidden>No sessions yet. Start one from the New Session page.</p>
+
+  <!-- Rows are built by history.js from saved sessions -->
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Topic</th>
+        <th>Subject</th>
+        <th>Questions</th>
+      </tr>
+    </thead>
+    <tbody id="history-body"></tbody>
+  </table>
+
+  <button type="button" id="clear-history" class="btn btn-secondary" style="margin-top: 1.25rem;">Clear History</button>
+</main>
 
   <footer>
     <p>StudySprint — COMP 322 Honors Contract Project</p>
   </footer>
+
+  <script src="storage.js"></script>
+  <script src="history.js"></script>
+  
 </body>
 </html>
