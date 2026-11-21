@@ -3,32 +3,42 @@
 A study aid web application that generates AI-powered practice questions and explanations from a student's notes or a chosen topic. Built for use in tutoring and Supplemental Instruction (SI) settings, where students or peer leaders need quick, targeted practice material without writing it from scratch.
 
 ## Status
-This repository currently contains the M1 static frontend and the M2 interactive frontend for the COMP 322 Honors Contract project: HTML structure and CSS styling for all planned pages, with navigation between them, plus client-side form validation, event handling, and mock responses saved in the browser's localStorage. Backend routes, AI integration, and database persistence are not yet implemented and will be added in later milestones.
+The static frontend (M1), interactive frontend (M2), and Express backend with server-side AI integration (M3) are complete. Sessions are currently saved in the browser's localStorage. Database persistence and further error-handling polish are planned for M4.
 
-## Pages
-- `index.html` — Home
-- `submit.html` — New session form with client-side validation (notes/topic input, subject, question count)
-- `results.html` — Displays the mock practice questions for a session, with show/hide answer buttons
-- `history.html` — Lists saved sessions from localStorage, with a link to each session's results
-- `about.html` — About the app and how it works
+## AI Integration
+The browser sends the user's notes, subject, and question count to `POST /api/generate`. The Express server validates the request, calls the Groq API (model `openai/gpt-oss-120b`) using an API key stored in `.env`, and returns the generated questions as JSON. The key is only ever used on the server and never appears in client-side code. Rate limits, provider outages, timeouts, and malformed AI responses return clear error messages that are displayed to the user.
 
-## Scripts
-- `storage.js` — Shared helpers for saving and loading sessions in localStorage, plus the mock question generator
-- `submit.js` — Form validation, live character counter, and mock submission
-- `results.js` — Loads and displays a saved session's questions
-- `history.js` — Builds the history table and handles clearing saved sessions
+## Setup and Running
+1. Install Node.js 18 or higher.
+2. Clone the repo and run `npm install`.
+3. Copy `.env.example` to `.env` (PowerShell: `Copy-Item .env.example .env`) and set `GROQ_API_KEY` to your key (free key at https://console.groq.com/keys).
+4. Run `npm start`.
+5. Open http://localhost:3000.
 
-## Styles
-- `styles.css` — Shared styling for all pages
+## Project Structure
+- `server.js` — Express server: serves the frontend, validates requests, and calls the Groq API
+- `package.json` — Dependencies (`express`, `dotenv`) and the `npm start` script
+- `.env.example` — Template for required environment variables (the real `.env` is git-ignored)
+- `public/` — Frontend files served to the browser:
+  - `index.html` — Home
+  - `submit.html` — New session form with client-side validation
+  - `results.html` — Displays a session's generated questions, with show/hide answer buttons
+  - `history.html` — Lists saved sessions, with a link to each session's results
+  - `about.html` — About the app and how it works
+  - `styles.css` — Shared styling for all pages
+  - `storage.js` — Helpers for saving and loading sessions in localStorage
+  - `submit.js` — Form validation, live character counter, and the API call
+  - `results.js` — Loads and displays a saved session's questions
+  - `history.js` — Builds the history table and handles clearing saved sessions
 
-## Planned AI Provider
-Groq (free tier) — to be integrated server-side in M3.
+## API
+`POST /api/generate`
+- Request body: `{ "topic": string, "subject": "math" | "cs" | "science" | "history" | "other", "count": 1-10 }`
+- Success: `200` with `{ "questions": [{ "question": string, "answer": string }] }`
+- Errors: `400` invalid input, `429` AI rate limit, `502` AI service failure, `504` AI timeout, each with `{ "error": string }`
 
-## Tech Stack (planned, full project)
+## Tech Stack
 - Frontend: HTML, CSS, JavaScript
 - Backend: Node.js / Express REST API
 - AI: Groq API (server-side only)
-- Database: MySQL or MongoDB
-
-## Running Locally
-No build step or backend is required for this milestone. Clone the repo and serve the folder with a static file server, such as the Live Server extension in VS Code, then open `index.html`. Opening the file directly in a browser also works, but a local server is recommended because the pages share session data through localStorage and pass session IDs in the URL.
+- Database: MySQL or MongoDB (planned for M4)

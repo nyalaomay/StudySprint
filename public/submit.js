@@ -1,4 +1,5 @@
-// Handles validation and mock submission for the New Session form.
+// Handles validation and submission for the New Session form.
+// M3: the form now calls the Express backend (POST /api/generate).
 const form = document.getElementById("session-form");
 const topicInput = document.getElementById("topic");
 const subjectInput = document.getElementById("subject");
@@ -54,6 +55,33 @@ function validateCount() {
   return true;
 }
 
+// Ask the backend for questions. Throws an Error with a user-friendly message.
+async function requestQuestions(topic, subject, count) {
+  let response;
+  try {
+    response = await fetch("/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ topic, subject, count }),
+    });
+  } catch (networkError) {
+    // The server itself couldn't be reached.
+    throw new Error("Can't reach the StudySprint server. Make sure it is running and try again.");
+  }
+
+  let data = {};
+  try {
+    data = await response.json();
+  } catch (parseError) {
+    // Non-JSON response; fall through to the generic message below.
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || "Something went wrong. Please try again.");
+  }
+  return data.questions;
+}
+
 // Live character counter; re-validate while typing once an error is showing.
 topicInput.addEventListener("input", () => {
   counter.textContent = `${topicInput.value.length} / ${MAX_LENGTH}`;
@@ -65,7 +93,7 @@ topicInput.addEventListener("blur", validateTopic);
 subjectInput.addEventListener("change", validateSubject);
 countInput.addEventListener("blur", validateCount);
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault(); // stop the page from reloading / posting
 
   // Run all three checks (array so none are skipped).
@@ -75,23 +103,29 @@ form.addEventListener("submit", (event) => {
     return;
   }
 
-  // Mock "AI call": short delay, then save a fake session and open results.
+  const topic = topicInput.value.trim();
+  const subject = subjectInput.value;
+  const count = Number(countInput.value);
+
   submitBtn.disabled = true;
+  statusMsg.classList.remove("error");
   statusMsg.textContent = "Generating your practice questions...";
 
-  setTimeout(() => {
+  try {
+    const questions = await requestQuestions(topic, subject, count);
     const session = {
       id: String(Date.now()),
       date: Date.now(),
-      topic: topicInput.value.trim(),
-      subject: subjectInput.value,
-      questions: generateMockQuestions(
-        topicInput.value.trim(),
-        subjectInput.value,
-        Number(countInput.value)
-      ),
+      topic,
+      subject,
+      questions,
     };
-    addSession(session);
+    addSession(session); // saved in localStorage until M4 adds the database
     window.location.href = "results.html?id=" + session.id;
-  }, 900);
+  } catch (error) {
+    // Graceful failure: show the message and let the user try again.
+    statusMsg.classList.add("error");
+    statusMsg.textContent = error.message;
+    submitBtn.disabled = false;
+  }
 });

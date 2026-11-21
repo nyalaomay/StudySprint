@@ -202,3 +202,5 @@ form .invalid {
   header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
   nav ul { gap: 0.85rem; }
 }
+/* M3: error state for the form status message */
+.form-status.error { color: #b42318; }
